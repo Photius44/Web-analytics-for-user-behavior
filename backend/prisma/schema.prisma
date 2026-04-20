@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Project {
+  id         String    @id @default(uuid())
+  name       String
+  domain     String
+  createdAt  DateTime  @default(now())
+  
+  sessions   Session[]
+  events     Event[]
+}
+
+model Session {
+  id              String    @id @default(uuid())
+  projectId       String
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  visitorId       String    // ID định danh lưu ở cookie khách hàng
+  browser         String?
+  os              String?
+  deviceType      String?
+  country         String?
+  
+  startedAt       DateTime  @default(now())
+  endedAt         DateTime?
+  durationSeconds Int       @default(0)
+
+  events          Event[]
+
+  @@index([projectId])
+}
+
+enum EventType {
+  PAGE_VIEW
+  CLICK
+  SCROLL
+  CUSTOM
+}
+
+model Event {
+  id          String    @id @default(uuid())
+  sessionId   String
+  session     Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  eventType   EventType
+  pageUrl     String
+  
+  // Lưu trữ linh hoạt tọa độ, phần trăm scroll, v.v.
+  payload     Json      
+  
+  createdAt   DateTime  @default(now())
+
+  @@index([projectId, eventType])
+  @@index([sessionId])
+}
