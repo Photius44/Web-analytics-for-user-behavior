@@ -5,7 +5,18 @@ import { funnelData } from "@/lib/mock-data";
 import { Users, ArrowDownRight, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function FunnelAnalysis() {
+export interface FunnelStep {
+  step: string;
+  visitors: number;
+  percentage: number;
+  dropoff: number;
+}
+
+export function FunnelAnalysis({ data }: { data?: FunnelStep[] }) {
+  const displayData = data && data.length > 0 ? data : funnelData;
+  const overallConversion = displayData.length > 0 ? displayData[displayData.length - 1].percentage : 0;
+  const totalDropoff = 100 - overallConversion;
+
   return (
     <Card className="bg-card border-border">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -17,8 +28,8 @@ export function FunnelAnalysis() {
       </CardHeader>
       <CardContent className="pt-6">
         <div className="relative space-y-4">
-          {funnelData.map((step, i) => {
-            const nextStep = funnelData[i + 1];
+          {displayData.map((step, i) => {
+            const nextStep = displayData[i + 1];
             return (
               <div key={step.step} className="relative">
                 <div className="flex items-center gap-4">
@@ -35,7 +46,7 @@ export function FunnelAnalysis() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{step.step}</p>
-                        <p className="text-xl font-bold">{step.visitors.toLocaleString()}</p>
+                        <p className="text-xl font-bold">{step.visitors.toLocaleString('en-US')}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-2xl font-black text-primary/40">{step.percentage}%</p>
@@ -73,11 +84,11 @@ export function FunnelAnalysis() {
         <div className="mt-8 grid grid-cols-2 gap-4 border-t border-border pt-6">
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground uppercase font-bold tracking-tight">Overall Conversion</p>
-            <p className="text-2xl font-bold text-success">10.0%</p>
+            <p className="text-2xl font-bold text-success">{overallConversion.toFixed(1)}%</p>
           </div>
           <div className="space-y-1 text-right">
             <p className="text-xs text-muted-foreground uppercase font-bold tracking-tight">Total Drop-off</p>
-            <p className="text-2xl font-bold text-destructive">90.0%</p>
+            <p className="text-2xl font-bold text-destructive">{totalDropoff.toFixed(1)}%</p>
           </div>
         </div>
       </CardContent>

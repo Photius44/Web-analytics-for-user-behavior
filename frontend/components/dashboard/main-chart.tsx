@@ -79,9 +79,10 @@ const chartConfig = {
   },
 };
 
-export function MainChart() {
+export function MainChart({ data }: { data?: typeof chartData }) {
   const [activeChart, setActiveChart] = useState<ChartType>("visitors");
   const [chartView, setChartView] = useState<ChartViewType>("line");
+  const displayData = data || chartData;
 
   return (
     <Card className="bg-card border-border">
@@ -126,7 +127,7 @@ export function MainChart() {
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
             {chartView === "line" ? (
-              <AreaChart data={chartData}>
+              <AreaChart data={displayData}>
                 <defs>
                   <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop
@@ -161,7 +162,7 @@ export function MainChart() {
                   }
                 />
                 <Tooltip
-                  content={<CustomTooltip activeChart={activeChart} chartDataRef={chartData} />}
+                  content={<CustomTooltip activeChart={activeChart} chartDataRef={displayData} />}
                 />
                 <Area
                   type="monotone"
@@ -172,7 +173,7 @@ export function MainChart() {
                 />
               </AreaChart>
             ) : (
-              <BarChart data={chartData}>
+              <BarChart data={displayData}>
                 <defs>
                   <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop
@@ -207,7 +208,7 @@ export function MainChart() {
                   }
                 />
                 <Tooltip
-                  content={<CustomTooltip activeChart={activeChart} chartDataRef={chartData} />}
+                  content={<CustomTooltip activeChart={activeChart} chartDataRef={displayData} />}
                 />
                 <Bar
                   dataKey={activeChart}

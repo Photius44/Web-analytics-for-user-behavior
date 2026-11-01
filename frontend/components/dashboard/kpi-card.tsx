@@ -7,12 +7,14 @@ import { Area, AreaChart, ResponsiveContainer } from "recharts";
 
 interface KpiCardProps {
   title: string;
-  value: string;
+  value: string | React.ReactNode;
   change: number;
-  trend: "up" | "down";
+  trend: "up" | "down" | "FIRST_PERIOD";
   sparkline: number[];
   icon: React.ReactNode;
   accentColor?: "teal" | "indigo" | "amber" | "rose";
+  /** When true, renders a neutral "New Project" badge instead of a red/green % trend */
+  isNewProject?: boolean;
 }
 
 const accentColorMap = {
@@ -54,8 +56,9 @@ export function KpiCard({
   sparkline,
   icon,
   accentColor,
+  isNewProject = false,
 }: KpiCardProps) {
-  const isPositive = trend === "up" ? change > 0 : change < 0;
+  const isPositive = trend === "FIRST_PERIOD" || (trend === "up" ? change > 0 : change < 0);
   const chartData = sparkline.map((value, index) => ({ value, index }));
   const accentStyles = accentColor ? accentColorMap[accentColor] : null;
 
@@ -76,22 +79,36 @@ export function KpiCard({
       <CardContent>
         <div className="flex items-end justify-between">
           <div className="space-y-1">
-            <p className="text-3xl font-bold text-foreground">{value}</p>
-            <div
-              className={cn(
-                "flex items-center gap-1 text-sm font-medium",
-                isPositive ? "text-success" : "text-destructive"
-              )}
-            >
-              {trend === "up" ? (
-                <TrendingUp className="h-4 w-4" />
-              ) : (
-                <TrendingDown className="h-4 w-4" />
-              )}
-              <span>
-                {Math.abs(change)}% {isPositive ? "increase" : "decrease"}
-              </span>
-            </div>
+            <div className="text-3xl font-bold text-foreground">{value}</div>
+            {trend === "FIRST_PERIOD" ? (
+              <div className="flex items-center gap-1 text-sm font-medium text-success">
+                <span className="rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 px-2 py-0.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5">
+                  ▲ Init (+100%)
+                </span>
+              </div>
+            ) : isNewProject ? (
+              <div className="flex items-center gap-1 text-sm font-medium text-muted-foreground">
+                <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-muted-foreground">
+                  New Project
+                </span>
+              </div>
+            ) : (
+              <div
+                className={cn(
+                  "flex items-center gap-1 text-sm font-medium",
+                  isPositive ? "text-success" : "text-destructive"
+                )}
+              >
+                {trend === "up" ? (
+                  <TrendingUp className="h-4 w-4" />
+                ) : (
+                  <TrendingDown className="h-4 w-4" />
+                )}
+                <span>
+                  {Math.abs(change)}% {isPositive ? "increase" : "decrease"}
+                </span>
+              </div>
+            )}
           </div>
           <div className="h-12 w-24">
             <ResponsiveContainer width="100%" height="100%">

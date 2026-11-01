@@ -27,7 +27,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { trackingScript } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import {
   Settings,
@@ -43,6 +42,7 @@ import {
   UserPlus,
   Trash2,
 } from "lucide-react";
+import { useProject } from "@/context/ProjectContext";
 
 type SettingsTab = "tracking" | "details" | "preferences" | "team";
 
@@ -53,6 +53,21 @@ const initialTeam = [
 ];
 
 export default function SettingsPage() {
+  const { selectedProject } = useProject();
+  const projectId = selectedProject?.id ?? "YOUR_PROJECT_ID";
+  const projectName = selectedProject?.name ?? "—";
+  const projectDomain = selectedProject?.domain ?? "—";
+  const createdAt = selectedProject?.createdAt
+    ? new Date(selectedProject.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+    : "—";
+
+  // Build the live tracking script for this project
+  const liveScript = `<script
+  src="http://localhost:5000/tracker.js"
+  data-project-id="${projectId}"
+  async
+></script>`;
+
   const [copied, setCopied] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [verified, setVerified] = useState(false);
@@ -62,7 +77,7 @@ export default function SettingsPage() {
   const [showInvite, setShowInvite] = useState(false);
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(trackingScript);
+    navigator.clipboard.writeText(liveScript);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -101,7 +116,8 @@ export default function SettingsPage() {
           <div>
             <h1 className="text-2xl font-bold">Settings</h1>
             <p className="text-muted-foreground">
-              Manage your analytics configuration and preferences.
+              Manage your analytics configuration for{" "}
+              <span className="font-semibold text-foreground">{projectName}</span>
             </p>
           </div>
         </div>
@@ -141,7 +157,6 @@ export default function SettingsPage() {
                         <Code className="h-5 w-5 text-primary" />
                         <CardTitle className="text-lg font-semibold">Tracking Script</CardTitle>
                       </div>
-                      {/* Pulsing live badge */}
                       <div className="flex items-center gap-1.5 rounded-full bg-success/15 px-3 py-1">
                         <span className="relative flex h-2.5 w-2.5">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75" />
@@ -152,13 +167,20 @@ export default function SettingsPage() {
                     </div>
                     <CardDescription>
                       Add this script to your website to start tracking analytics.
-                      Place it in the {"<head>"} section of your HTML.
+                      Place it in the <code className="font-mono text-xs text-primary">&lt;head&gt;</code> section of your HTML.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    {/* Project ID pill */}
+                    <div className="flex items-center gap-2 rounded-lg border border-border bg-secondary/40 px-4 py-2">
+                      <span className="text-xs text-muted-foreground">Project ID:</span>
+                      <code className="font-mono text-xs font-semibold text-indigo-400">{projectId}</code>
+                    </div>
+
+                    {/* Live Script Block */}
                     <div className="relative">
-                      <pre className="overflow-x-auto rounded-lg bg-secondary p-4 text-sm font-mono text-foreground">
-                        <code>{trackingScript}</code>
+                      <pre className="overflow-x-auto rounded-lg bg-black/60 p-4 text-sm font-mono text-indigo-300 border border-border/40">
+                        <code>{liveScript}</code>
                       </pre>
                       <Button
                         size="sm"
@@ -179,15 +201,21 @@ export default function SettingsPage() {
                         )}
                       </Button>
                     </div>
+
                     <div className="rounded-lg border border-border bg-primary/5 p-4">
                       <h4 className="font-medium mb-2">Installation Instructions</h4>
                       <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
                         <li>Copy the tracking script above</li>
-                        <li>Paste it in the {"<head>"} section of your website&apos;s HTML</li>
+                        <li>
+                          Paste it in the{" "}
+                          <code className="font-mono text-xs text-primary">&lt;head&gt;</code>{" "}
+                          section of your website&apos;s HTML
+                        </li>
                         <li>Deploy your changes — analytics will start tracking immediately</li>
                         <li>Data typically appears in your dashboard within 5 minutes</li>
                       </ol>
                     </div>
+
                     <Button
                       className={cn(
                         "w-full gap-2 transition-all",
@@ -218,34 +246,33 @@ export default function SettingsPage() {
                   </CardContent>
                 </Card>
 
-                {/* Domain Settings */}
+                {/* Domain Settings — live from selectedProject */}
                 <Card className="bg-card border-border">
                   <CardHeader>
                     <div className="flex items-center gap-2">
                       <Globe className="h-5 w-5 text-primary" />
                       <CardTitle className="text-lg font-semibold">Domain Settings</CardTitle>
                     </div>
-                    <CardDescription>Manage the domains where your tracking script is active.</CardDescription>
+                    <CardDescription>
+                      Domains where your tracking script is active.
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      {[
-                        { domain: "example.com", desc: "Primary domain" },
-                        { domain: "app.example.com", desc: "Subdomain" },
-                      ].map(({ domain, desc }) => (
-                        <div key={domain} className="flex items-center justify-between rounded-lg border border-border p-3">
-                          <div className="flex items-center gap-3">
-                            <div className="flex h-8 w-8 items-center justify-center rounded bg-success/20">
-                              <Check className="h-4 w-4 text-success" />
-                            </div>
-                            <div>
-                              <p className="font-medium">{domain}</p>
-                              <p className="text-sm text-muted-foreground">{desc}</p>
-                            </div>
+                      {/* Primary domain from DB */}
+                      <div className="flex items-center justify-between rounded-lg border border-border p-3">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-8 w-8 items-center justify-center rounded bg-success/20">
+                            <Check className="h-4 w-4 text-success" />
                           </div>
-                          <Badge className="bg-success/20 text-success border-success/30">Active</Badge>
+                          <div>
+                            <p className="font-medium font-mono">{projectDomain}</p>
+                            <p className="text-sm text-muted-foreground">Primary domain</p>
+                          </div>
                         </div>
-                      ))}
+                        <Badge className="bg-success/20 text-success border-success/30">Active</Badge>
+                      </div>
+
                       <Button variant="outline" className="w-full mt-2">Add Domain</Button>
                     </div>
                   </CardContent>
@@ -253,11 +280,32 @@ export default function SettingsPage() {
               </>
             )}
 
+            {/* Site Details Tab */}
             {activeTab === "details" && (
               <Card className="bg-card border-border">
-                <CardHeader><CardTitle>Site Details</CardTitle></CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">Site details configuration coming soon...</p>
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold">Site Details</CardTitle>
+                  <CardDescription>Details for the currently selected project.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Project Name</p>
+                      <p className="font-semibold">{projectName}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Domain</p>
+                      <p className="font-mono text-sm">{projectDomain}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Project ID</p>
+                      <p className="font-mono text-xs break-all text-indigo-400">{projectId}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Created</p>
+                      <p className="text-sm">{createdAt}</p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -289,7 +337,6 @@ export default function SettingsPage() {
                   </Button>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {/* Inline invite input */}
                   {showInvite && (
                     <div className="flex items-center gap-2 rounded-lg border border-border bg-secondary/40 p-3">
                       <Input

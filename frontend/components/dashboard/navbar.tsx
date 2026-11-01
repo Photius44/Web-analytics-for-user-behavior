@@ -16,6 +16,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { ProjectSelector } from "@/components/dashboard/project-selector";
+import { AddProjectModal } from "@/components/dashboard/add-project-modal";
 
 const notifications = [
   {
@@ -159,6 +161,12 @@ export function Navbar() {
 
           {/* Right Side */}
           <div className="flex items-center gap-4">
+            {/* Project Selector */}
+            <div className="flex items-center gap-2">
+              <ProjectSelector />
+              <AddProjectModal />
+            </div>
+
             {/* Date Range Selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

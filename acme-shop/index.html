@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACME Book Shop - Website Khách Hàng</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            background: #f4f4f9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .product {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .spacer {
+            height: 1200px;
+            background: linear-gradient(to bottom, #ffffff, #e2e8f0);
+            padding: 20px;
+            margin-top: 20px;
+        }
+    </style>
+
+    <script src="http://localhost:5000/tracker.js" data-project-id="client-shop-9999" async>
+    </script>
+</head>
+
+<body>
+    <h1>📚 Chào mừng đến với ACME Book Shop</h1>
+    <p>Trang web này đóng vai trò là <strong>Website của Khách hàng</strong> nhúng mã tracker của bạn.</p>
+
+    <div class="product">
+        <h2>Sách: Lập trình TypeScript Nâng Cao</h2>
+        <p>Giá: 250.000đ</p>
+        <button id="btn-buy-ts">Mua Ngay</button>
+    </div>
+
+    <div class="product">
+        <h2>Sách: Làm Chủ Next.js App Router</h2>
+        <p>Giá: 300.000đ</p>
+        <button id="btn-buy-next">Thêm Vào Giỏ Hàng</button>
+    </div>
+
+    <div class="spacer">
+        <h3>Cuộn xuống dưới để xem nội dung chi tiết...</h3>
+        <p>Hệ thống đang đo lường phần trăm cuộn trang của bạn.</p>
+        <button id="btn-footer-sub">Đăng ký nhận tin ở Footer</button>
+    </div>
+</body>
+
+</html>

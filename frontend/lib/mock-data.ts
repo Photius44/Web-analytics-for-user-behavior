@@ -81,9 +81,9 @@ export const aiInsights = [
   },
   {
     id: 2,
-    title: "CTA button is not receiving enough clicks",
-    explanation: "Your primary CTA has a click-through rate of only 1.2%, below the expected 3-5%.",
-    recommendation: "Move the CTA higher on the page and use more contrasting colors.",
+    title: "Frustrated users detected due to rage clicks",
+    explanation: "Multiple sessions contain rapid, repeated click sequences on dead elements, indicating high user frustration.",
+    recommendation: "Investigate target buttons on the Pricing and Sign Up pages for broken links or scripting errors.",
     severity: "high" as const,
     correlatedSessionIds: ["sess_002", "sess_004", "sess_006"],
   },
